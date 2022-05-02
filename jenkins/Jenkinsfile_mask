@@ -1,0 +1,22 @@
+// Define secret variables
+def APP_USERNAME = "MyTestUser"
+def APP_PASSWORD = "HERE_Your_Pass"
+
+// Mask secret variables and try to print
+pipeline {
+  agent any
+  stages {
+    stage ("Print variable") {
+      steps {
+        wrap([$class: "MaskPasswordsBuildWrapper",
+              varPasswordPairs: [[password: APP_USERNAME],
+                                 [password: APP_PASSWORD]]]) {
+          echo "Password: ${APP_USERNAME}"
+          echo "Secret: ${APP_PASSWORD}"
+          curl -i -H 'Accept:application/json' Authorization:Basic ${APP_USERNAME}:${APP_PASSWORD} http://example.com
+
+        }
+      }
+    }
+  }
+}
